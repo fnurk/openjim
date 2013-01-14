@@ -20,7 +20,8 @@ class Client {
 	public DataInputStream in;
 	public DataOutputStream out;
 	private boolean running = true;
-
+	private String inText = "";
+	
 	public void start() {
 		// Initialize GUI
 		GUI guiObject = new GUI(this);
@@ -54,23 +55,24 @@ class Client {
 
 		// Program loop
 		while (running) {
+			
+			//Store input from server
 			try {
-
-				guiObject.showMessage(in.readUTF());
-			} catch (IOException e) {
-				e.printStackTrace();
+				inText = in.readUTF();
+			} catch (IOException e2) {
+				e2.printStackTrace();
 			}
 			
 			//If disconnected, stop looping
-			try {
-				if (in.readUTF() == "$SERVERSHUTDOWN")
-				{
-					running = false;
-					guiObject.promptUser("Disconnected from server.");
-				}
-			} catch (IOException e1) {
-				e1.printStackTrace();
+			if (inText.equals("$SERVERSHUTDOWN"))
+			{
+				running = false;
+				guiObject.promptUser("Disconnected from server.");
+				break;
 			}
+			
+			//Display from server
+			guiObject.showMessage(inText);
 			
 		}
 		//close disconnection at shutdown, when loop is exited
@@ -79,7 +81,6 @@ class Client {
 			out.close();
 			in.close();
 		} catch (IOException e1) {
-			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
 		

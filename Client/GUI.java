@@ -1,5 +1,4 @@
 import java.awt.FlowLayout;
-import java.awt.ScrollPane;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import javax.swing.JFrame;
@@ -8,6 +7,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.JTextArea;
 import javax.swing.SwingUtilities;
+import javax.swing.JOptionPane;
 
 public class GUI extends JFrame {
 	private JTextArea chatField;
@@ -15,6 +15,7 @@ public class GUI extends JFrame {
 	private JLabel inputFieldLabel;
 	private Client client;
 	private JScrollPane scrollpane;
+	private JOptionPane optionPane;
 
 	public GUI(final Client client) {
 		super("JIMmy Client");
@@ -27,10 +28,10 @@ public class GUI extends JFrame {
 		scrollpane = new JScrollPane(chatField);
 		add(scrollpane);
 
-		inputFieldLabel = new JLabel("Enter anything:");
+		inputFieldLabel = new JLabel("Enter text here: ");
 		add(inputFieldLabel);
 
-		inputField = new JTextField("Enter something...");
+		inputField = new JTextField("", 20);
 		inputField.setToolTipText("Enter anything to send here");
 		add(inputField);
 
@@ -49,7 +50,8 @@ public class GUI extends JFrame {
 	
 	public void promptUser(String x)
 	{
-		chatField.append("\n" + x);
+		//chatField.append("\n" + x);
+		optionPane.showMessageDialog(null, x);
 	}
 
 
