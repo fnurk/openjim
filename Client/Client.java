@@ -63,7 +63,7 @@ class Client {
 			
 			//If disconnected, stop looping
 			try {
-				if (in.readUTF() == "$DISCONNECT")
+				if (in.readUTF() == "$SERVERSHUTDOWN")
 				{
 					running = false;
 					guiObject.promptUser("Disconnected from server.");
