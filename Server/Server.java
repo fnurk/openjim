@@ -14,13 +14,13 @@ public class Server {
 	private JTextArea text;
 	private JScrollPane scroll;
 	private ArrayList<ServerClient> clients = new ArrayList<ServerClient>(20);
-	
-	public Server(){
-		window = new JFrame("JIMessenger Server");
+
+	public Server() {
+		window = new JFrame("JIMmy Server");
 		window.setLayout(new FlowLayout(FlowLayout.LEADING));
 		window.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 		window.addWindowListener(new WindowAdapter() {
-			public void windowClosing(WindowEvent e){
+			public void windowClosing(WindowEvent e) {
 				shutdownServer();
 			}
 		});
@@ -34,49 +34,59 @@ public class Server {
 		window.pack();
 		window.setVisible(true);
 	}
-	
-	public void listen(){
-		try{
+
+	public void listen() {
+		try {
 			serverSocket = new ServerSocket(25568);
-		}catch(IOException e){
+		} catch (IOException e) {
 			addText("Could not bind port 25568, server already running?");
 		}
-		while(true){
+		while (true) {
 			ServerClient client;
-			try{
+			try {
 				client = new ServerClient(serverSocket.accept(), this);
-				clients.add(client);
-				addText("User at " + client.socket.getInetAddress().toString().replace("/", "") + " connected.");
-				Thread t = new Thread(client);
-				t.start();
-			}catch(IOException e){
-				System.out.println("Connection failed.");
+				boolean exists = false;
+				for (ServerClient c : clients) {
+					if (client.getNickname().equals(c.getNickname())) {
+						exists = true;
+					}
 				}
+				if (exists) {
+					client.out.writeUTF("Nickname " + client.getNickname() + " already taken!\nPlease reconnect with a new one!");
+				} else if (!exists) {
+					clients.add(client);
+					sendText(client.getNickname() + " at " + client.socket.getInetAddress().toString().replace("/", "") + " connected.");
+					Thread t = new Thread(client);
+					t.start();
+				}
+
+			} catch (IOException e) {
+				System.out.println("Connection failed.");
+			}
 		}
-		
+
 	}
-	
-	public void addText(String text){
+
+	public void addText(String text) {
 		this.text.append("\n" + text);
 		this.text.setCaretPosition(this.text.getDocument().getLength());
 	}
-	
-	public void sendText(String text){
+
+	public void sendText(String text) {
 		addText(text);
-		for(ServerClient c : clients){
+		for (ServerClient c : clients) {
 			c.sendText(text);
 		}
 	}
-	
-	public void removeClient(ServerClient c){
+
+	public void removeClient(ServerClient c) {
 		clients.remove(c);
 	}
-	
-	public void shutdownServer(){
-		sendText("Server shutting down!");
+
+	public void shutdownServer() {
+		sendText("$SERVERSHUTDOWN");
 		System.exit(0);
 	}
-
 
 	public static void main(String[] args) {
 		Server server = new Server();

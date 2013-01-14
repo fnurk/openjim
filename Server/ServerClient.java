@@ -3,87 +3,69 @@ package Server;
 import java.net.*;
 import java.io.*;
 
-
-public class ServerClient implements Runnable{
+public class ServerClient implements Runnable {
 	public Socket socket;
 	private Server server;
 	public DataOutputStream out = null;
 	private DataInputStream in = null;
 	public boolean running;
 	private String nickname;
-	
-	public ServerClient(Socket socket, Server server){
+
+	public ServerClient(Socket socket, Server server) {
 		this.socket = socket;
-		this.nickname = "Unknown";
 		this.server = server;
+		try {
+			in = new DataInputStream(socket.getInputStream());
+			out = new DataOutputStream(socket.getOutputStream());
+			this.nickname = in.readUTF();
+		} catch (IOException e) {
+			System.out.println("IOexception: I or O failed");
+		}
 	}
 
 	@Override
 	public void run() {
 		running = true;
-		try{
-			in = new DataInputStream(socket.getInputStream());
-			out = new DataOutputStream(socket.getOutputStream());
-		}catch(IOException e){
-			System.out.println("IOexception: I or O failed");
-		}
-		while(running){
+		while (running) {
 			String intext;
-			try{
+			try {
 				intext = in.readUTF();
-				if(intext.equals("$DISCONNECT")){
+				if (intext.equals("$DISCONNECT")) {
 					disconnect();
+					running = false;
 					break;
-				}
-				if(intext.equals("$CHANGENICK")){
-					changeNickname();
-				}
-				else{
+				} else {
 					server.sendText(nickname + ": " + intext);
 				}
-				}catch(IOException e){
+			} catch (IOException e) {
 				server.addText("Could not read. " + nickname + " probably dropped.");
-				server.removeClient(this);
 				running = false;
-
+				server.removeClient(this);
 			}
 		}
 	}
-	
-	
-	public void sendText(String text){
+
+	public void sendText(String text) {
 		try {
 			out.writeUTF(text);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
-	
-	public void setNickname(String nick){
-		nickname = nick;
+
+	public String getNickname() {
+		return nickname;
 	}
-	
-	public void changeNickname(){
-		try {
-			String oldnick = nickname;
-			out.flush();
-			out.writeUTF("write your new nick");
-			nickname = in.readUTF();
-			server.sendText("User " + oldnick + " changed nickname to " + nickname);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
-	
-	public void disconnect(){
+
+	public void disconnect() {
+		server.sendText("User " + this.nickname + " at " + socket.getInetAddress().toString().replace("/", "") + " disconnected.");
 		server.removeClient(this);
-		server.sendText("User " + this.nickname + " at " + socket.getInetAddress().toString().replace("/","") + " disconnected."); 
 		try {
 			socket.close();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 		running = false;
-		
+
 	}
 }
