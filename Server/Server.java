@@ -3,6 +3,7 @@ package Server;
 import java.net.*;
 import java.util.ArrayList;
 import javax.swing.*;
+
 import java.awt.FlowLayout;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
@@ -61,7 +62,7 @@ public class Server {
 				}
 
 			} catch (IOException e) {
-				System.out.println("Connection failed.");
+				addText("Connection failed.");
 			}
 		}
 

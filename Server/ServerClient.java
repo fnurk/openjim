@@ -32,17 +32,18 @@ public class ServerClient implements Runnable {
 				intext = in.readUTF();
 				if (intext.equals("$DISCONNECT")) {
 					disconnect();
-					running = false;
 					break;
 				} else {
 					server.sendText(nickname + ": " + intext);
 				}
 			} catch (IOException e) {
+				e.printStackTrace();
 				server.addText("Could not read. " + nickname + " probably dropped.");
 				running = false;
 				server.removeClient(this);
 			}
 		}
+
 	}
 
 	public void sendText(String text) {
@@ -65,7 +66,6 @@ public class ServerClient implements Runnable {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		running = false;
 
 	}
 }
