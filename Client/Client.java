@@ -76,6 +76,12 @@ class Client {
 			
 		}
 		//close disconnection at shutdown, when loop is exited
+
+		
+	}
+
+	public void shutdownServer() {
+		running = false;
 		try {
 			out.writeUTF("$DISCONNECT");
 			out.close();
@@ -83,11 +89,6 @@ class Client {
 		} catch (IOException e1) {
 			e1.printStackTrace();
 		}
-		
-	}
-
-	public void shutdownServer() {
-		running = false;
 		System.exit(0);
 	}
 
