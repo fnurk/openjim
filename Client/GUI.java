@@ -1,5 +1,3 @@
-package Client;
-
 import java.awt.FlowLayout;
 import java.awt.ScrollPane;
 import java.awt.event.ActionListener;
@@ -19,7 +17,7 @@ public class GUI extends JFrame {
 	private JScrollPane scrollpane;
 
 	public GUI(final Client client) {
-		super("Open-JIMessenger Client");
+		super("JIMmy Client");
 		setLayout(new FlowLayout());
 
 		chatField = new JTextArea(10, 40);
@@ -36,8 +34,6 @@ public class GUI extends JFrame {
 		inputField.setToolTipText("Enter anything to send here");
 		add(inputField);
 
-		//EventHandler eventHandler = new EventHandler();
-		//inputField.addActionListener(eventHandler);
 		inputField.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent event) {
 				client.sendMessage(event.getActionCommand());
@@ -46,24 +42,15 @@ public class GUI extends JFrame {
 		});
 	}
 
-	public void tr(String x) {
+	public void showMessage(String x) {
 		chatField.append("\n" + x);
 		chatField.setCaretPosition(chatField.getDocument().getLength());
 	}
+	
+	public void promptUser(String x)
+	{
+		chatField.append("\n" + x);
+	}
 
-	/*private class EventHandler implements ActionListener {
-		public void actionPerformed(ActionEvent event) {
-			if (event.getSource() == inputField) {
-				final String str = String.format("%s", event.getActionCommand());
-				SwingUtilities.invokeLater(new Runnable() {
-					public void run() {
-						client.sendMessage(str);
-					}
-				});
-			}
-
-		}
-
-	}*/
 
 }

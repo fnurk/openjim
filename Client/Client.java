@@ -1,5 +1,3 @@
-package Client;
-
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.*;
@@ -36,11 +34,14 @@ class Client {
 
 		guiObject.setSize(500, 300);
 		guiObject.setVisible(true);
-		guiObject.setResizable(true);
-
+		guiObject.setResizable(false);
+		
+		//Prompt user for nickname, before connecting
+		
+		guiObject.promptUser("Please enter a nickname: ");
 		// Connect to server
 		try {
-			client = new Socket("localhost", 25568);
+			client = new Socket("94.254.22.75", 25568);
 			inServer = client.getInputStream();
 			outServer = client.getOutputStream();
 
@@ -55,16 +56,28 @@ class Client {
 		while (running) {
 			try {
 
-				guiObject.tr(in.readUTF());
+				guiObject.showMessage(in.readUTF());
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
+			
+			//If disconnected, stop looping
+			try {
+				if (in.readUTF() == "$DISCONNECT")
+				{
+					running = false;
+					guiObject.promptUser("Disconnected from server.");
+				}
+			} catch (IOException e1) {
+				e1.printStackTrace();
+			}
+			
 		}
 		//close disconnection at shutdown, when loop is exited
 		try {
+			out.writeUTF("$DISCONNECT");
 			out.close();
 			in.close();
-			out.writeUTF("$DISCONNECT");
 		} catch (IOException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
