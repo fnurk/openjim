@@ -40,7 +40,7 @@ class Client {
 
 		// Connect to server
 		try {
-			client = new Socket("94.254.22.75", 25568);
+			client = new Socket("localhost", 25568);
 			inServer = client.getInputStream();
 			outServer = client.getOutputStream();
 
